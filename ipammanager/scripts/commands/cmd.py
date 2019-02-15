@@ -5,7 +5,7 @@ from ipammanager import errors as ipam_err
 from ipammanager.scripts.config import ConfigFileProcessor
 from ipammanager.scripts.utils import prompt_y_n_question
 from .services import init_ipam_service
-from .utils import show_ip
+from .utils import *
 
 
 def init(ctx):
@@ -51,8 +51,8 @@ def find(ctx, ipaddr, cidr, hostname, yes):
         click.echo(f"Error: {e.message}")
         ctx.exit(1)
 
-    click.echo(f"| IPv4 | Hostname | Description | Note |")
-    show_ip(result)
+    subnets = resolve_subnet(service, result)
+    show_ip(result, subnets)
 
 @click.command("new", help="Create a new ip address in the IPAM server")
 @click.argument("ipaddr")
@@ -77,7 +77,7 @@ def new(ctx, ipaddr, cidr, hostname, description, note, yes):
         click.echo(f"Error: {e.message}")
         ctx.exit(1)
     
-    show_ip(result)
+    click.echo(f"Info: Successfully created [{ipaddr}]")
 
 @click.command("put", help="Update existing ip address in the IPAM server")
 @click.argument("ipaddr")

@@ -1,5 +1,6 @@
 
 import click
+from ipammanager import utils
 
 def resolve_subnet(service, addresses):
     result = []
@@ -8,21 +9,27 @@ def resolve_subnet(service, addresses):
     return result
 
 def show_ip(addresses, subnets):
-    click.echo(f"{'IP': <20} {'HOSTNAME': <20} {'SUBNET': <20} {'DESCRIPTION': <30}")
+    data = []
     if isinstance(addresses, list):
         for addr, subnet in zip(addresses, subnets):
-            output = "{ip: <20} {hostname: <20} {subnet: <20} {description: <30}".format(
-                ip=addr.ip,
-                hostname=addr.hostname if addr.hostname else '-',
-                subnet=f"{subnet.subnet}/{subnet.mask}",
-                description=f"{f'{addr.description[:20] !r}' if addr.description else '-'}"
-            )
-            click.echo(output)
+            temp = [
+                addr.ip, 
+                f"{addr.hostname if addr.hostname else '-'}", 
+                f"{subnet.subnet}/{subnet.mask}",
+                f"{f'{addr.description[:20] !r}' if addr.description else '-'}"
+            ]
+            data.append(temp)
     else:
-        output = "{ip: <20} {hostname: <20} {subnet: <20} {description: <30}".format(
-            ip=addresses.ip,
-            hostname=addresses.hostname if addresses.hostname else '-',
-            subnet=f"{subnet.subnet}/{subnet.mask}",
-            description=f"{f'{addresses.description[:20] !r}' if addresses.description else '-'}"
-        )
-        click.echo(output)
+        temp = [
+            addr.ip, 
+            f"{addr.hostname if addr.hostname else '-'}", 
+            f"{subnet.subnet}/{subnet.mask}", 
+            f"{f'{addr.description[:20] !r}' if addr.description else '-'}"
+        ]
+        data.append(temp)
+
+    output = utils.Formatter.from_arr(
+        data,
+        headers=["IP", "HOSTNAME", "SUBNET", "DESCRIPTION"]
+    )
+    click.echo("\n".join(output))

@@ -4,8 +4,12 @@ from ipammanager import utils
 
 def resolve_subnet(service, addresses):
     result = []
-    for addr in addresses:
-        result.append(service.show_subnet(addr.subnetId))
+    
+    if isinstance(addresses, list):
+        for addr in addresses:
+            result.append(service.show_subnet(addr.subnetId))
+    else:
+        result.append(service.show_subnet(addresses.subnetId))
     return result
 
 def show_ip(addresses, subnets):
@@ -21,10 +25,10 @@ def show_ip(addresses, subnets):
             data.append(temp)
     else:
         temp = [
-            addr.ip, 
-            f"{addr.hostname if addr.hostname else '-'}", 
-            f"{subnet.subnet}/{subnet.mask}", 
-            f"{f'{addr.description[:20] !r}' if addr.description else '-'}"
+            addresses.ip, 
+            f"{addresses.hostname if addresses.hostname else '-'}", 
+            f"{subnets[0].subnet}/{subnets[0].mask}", 
+            f"{f'{addresses.description[:20] !r}' if addresses.description else '-'}"
         ]
         data.append(temp)
 
